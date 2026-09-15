@@ -149,10 +149,16 @@ function is_inside_zone(coord_X, coord_Y, radius_R) {
 }
 
 
-function try_f() {
-    const x = coord_X.value;
-    const y = coord_Y.value;
-    const r = radius_R.value;
+
+const form = document.getElementById('form_to_input');
+
+form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+
+    const x = formData.get('coord_X');
+    const y = formData.get('coord_Y');
+    const r = formData.get('radius_R');
 
     if (!input_is_correct(y, r)) {
         alert("Ошибка: введите корректные числа в диапазоне!");
@@ -163,10 +169,8 @@ function try_f() {
     const timestamp = Date.now();
     add_element_to_table(x, y, r, res, timestamp);
     saveToLocalStorage(x, y, r, res, timestamp);
-}
+});
 
-
-button_send.addEventListener('click', try_f);
 
 
 function add_element_to_table(x, y, r, isHit, timestamp) {
