@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ПРОВЕРКА ПОПАДАНИЯ</title>
+    <style>
+
+        body{
+            font-family: "DejaVu Sans Condensed";
+            background-color: white;
+            /*background-image: url("img.png");*/
+            /*background-repeat: no-repeat;*/
+            /*background-position: center;*/
+            /*background-size: cover;*/
+
+        }
+
+        #my_data {
+                font-family: cursive;
+                color: darkblue;
+                font-size: 28px;
+
+        }
+
+        #main_page_table{
+            width: 100%;
+            border: none;
+            border-spacing: 5px;
+        }
+
+        .anime_lol::before {
+            content: "⭐";
+            width: 10px;
+            height: 10px;
+        }
+        #drawing_pic{
+            text-align: center
+        }
+
+        #main_page_table td:first-child {
+            width: 40%;
+        }
+
+        #main_page_table td:last-child {
+            width: 60%;
+        }
+
+        #results-table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        #results-table th,
+        #results-table td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+        }
+
+        #results-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            margin: 5px;
+            padding: 5px;
+            width: 120px;
+            border: 1px solid #ccc;
+        }
+
+        select {
+            margin: 5px;
+            padding: 5px;
+            width: 130px;
+        }
+
+        #send_button {
+            margin: 10px 5px;
+            padding: 8px 16px;
+            cursor: pointer;
+            /*background-color: white;*/
+        }
+        #coord_X{
+            /*background-color: white;*/
+        }
+
+
+
+
+    </style>
+</head>
+
+<body>
+
+
+
+<table id="main_page_table">
+    <tr>
+        <th colspan="2" id="my_data">
+            <div> Логинова Дарья Андреевна </div>
+            <div class="anime_lol">P3213</div>
+            <div>Вариант 12706</div>
+        </th>
+    </tr>
+
+    <tr>
+        <td id="drawing_pic">
+            <canvas id="picture" width="400" height="400"> </canvas>
+        </td>
+
+
+
+        <td>
+            <form id="form_to_input">
+                <label for="coord_X"> Координата X:</label>
+                <select id="coord_X" name="coord_X">
+                    <option value="-5">-5</option>
+                    <option value="-4">-4</option>
+                    <option value="-3">-3</option>
+                    <option value="-2">-2</option>
+                    <option value="-1">-1</option>
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+
+                <br><br>
+                <label for="coord_Y"> Координата Y:</label>
+                <input id="coord_Y" type="text" placeholder="от -5 до 3">
+                <br><br>
+                <label for="radius_R"> Радиус R:</label>
+                <input id="radius_R" type="text" placeholder="от 1 до 4">
+
+                <button id="send_button" type="button"> Отправить </button>
+                <br><br>
+
+            </form>
+
+            <table id="results-table">
+                <thead>
+                <tr>
+                    <th>X</th>
+                    <th>Y</th>
+                    <th>R</th>
+                    <th>Результат</th>
+                    <th>Дата и время</th>
+                </tr>
+                </thead>
+                <tbody id="results-body"></tbody>
+            </table>
+
+
+        </td>
+
+    </tr>
+</table>
+
+<script src="logic.js"></script>
+</body>
+</html>
