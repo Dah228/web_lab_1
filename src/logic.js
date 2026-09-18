@@ -190,8 +190,21 @@ function add_element_to_table(x, y, r, isHit, timestamp) {
 }
 
 
+function hashString(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Преобразуем в 32-битное целое число
+    }
+    return Math.abs(hash).toString(16);
+}
+
+const UNIQUE_SALT = "keni_itmo_unique_salt_2026";
+const STORAGE_KEY = "savedPoints_" + hashString(UNIQUE_SALT);
+
 function saveToLocalStorage(x, y, r, isHit, timestamp) {
-    const saved_data = localStorage.getItem('savedPoints');
+    const saved_data = localStorage.getItem(STORAGE_KEY);
     let old_uploaded_data = saved_data ? JSON.parse(saved_data) : [];
     const new_card = {
         x: x,
@@ -203,12 +216,12 @@ function saveToLocalStorage(x, y, r, isHit, timestamp) {
 
     old_uploaded_data.push(new_card);
     const new_data_for_load = JSON.stringify(old_uploaded_data);
-    localStorage.setItem('savedPoints', new_data_for_load);
+    localStorage.setItem(STORAGE_KEY, new_data_for_load);
 }
 
 
 function loadFromLocalStorage(){
-    const saved_data = localStorage.getItem("savedPoints");
+    const saved_data = localStorage.getItem(STORAGE_KEY);
     let old_uploaded_data = saved_data ? JSON.parse(saved_data) : [];
     old_uploaded_data.forEach((item) => {
         add_element_to_table(item.x,item.y,item.r,item.isHit,item.timestamp);
