@@ -127,32 +127,12 @@ function input_is_correct(coord_Y, radius_R) {
     return check_not_null(coord_Y, radius_R) && check_number(coord_Y, radius_R) && check_range(coord_Y, radius_R);
 }
 
-function is_inside_circle(coord_X, coord_Y, radius_R) {
-    return parseFloat(coord_Y) > 0 && coord_X >= 0 && coord_X ** 2 + parseFloat(coord_Y) ** 2 <= (radius_R ** 2) / 4;
-}
-
-function is_inside_triangle(coord_X, coord_Y, radius_R) {
-    return parseFloat(coord_Y) <= 0 && coord_X <= 0 && (-parseFloat(coord_Y) - coord_X <= radius_R);
-}
-
-function is_inside_rectangle(coord_X, coord_Y, radius_R) {
-    return parseFloat(coord_Y) <= 0 && coord_X > 0 && Math.abs(parseFloat(coord_Y)) <= radius_R / 2 && coord_X <= radius_R;
-}
-
-
-function is_inside_zone(coord_X, coord_Y, radius_R) {
-    if (input_is_correct(coord_Y, radius_R)) {
-        return is_inside_circle(coord_X, coord_Y, radius_R) || is_inside_triangle(coord_X, coord_Y, radius_R) || is_inside_rectangle(coord_X, coord_Y, radius_R);
-    }
-    return false;
-
-}
 
 
 
 const form = document.getElementById('form_to_input');
 
-form.addEventListener('submit', function(event) {
+form.addEventListener('submit', async function(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
 
@@ -164,11 +144,37 @@ form.addEventListener('submit', function(event) {
         alert("Ошибка: введите корректные числа в диапазоне!");
         return;
     }
+    const data = {
+        coord_x: x,
+        coord_y: y,
+        radius_r:r
+    };
 
-    const res = is_inside_zone(x, y, r);
-    const timestamp = Date.now();
-    add_element_to_table(x, y, r, res, timestamp);
-    saveToLocalStorage(x, y, r, res, timestamp);
+    const data_json_str = JSON.stringify(data);
+    const set_obj = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: data_json_str
+    }
+    try {
+        const response = await fetch('/fcgi-bin/point-checker.jar', set_obj);
+
+        if (!response.ok) {
+            throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
+
+        const result_data = await response.json();
+
+        add_element_to_table(x, y, r, result_data.isHit, result_data.timestamp);
+
+    }catch (err){
+        console.error(err.message)
+        alert("server died 💔")
+    }
+
+
 });
 
 
@@ -185,48 +191,48 @@ function add_element_to_table(x, y, r, isHit, timestamp) {
         <td style="color: ${color}; font-weight: bold;">${resultText}</td>
         <td>${russian_date}</td>
     `;
-    tbody.appendChild(tr);
+    tbody.prepend(tr);
     return timestamp;
 }
 
 
-function hashString(str) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash; // Преобразуем в 32-битное целое число
-    }
-    return Math.abs(hash).toString(16);
-}
+// function hashString(str) {
+//     let hash = 0;
+//     for (let i = 0; i < str.length; i++) {
+//         const char = str.charCodeAt(i);
+//         hash = ((hash << 5) - hash) + char;
+//         hash = hash & hash; // Преобразуем в 32-битное целое число
+//     }
+//     return Math.abs(hash).toString(16);
+// }
 
-const UNIQUE_SALT = "keni_itmo_unique_salt_2026";
-const STORAGE_KEY = "savedPoints_" + hashString(UNIQUE_SALT);
-
-function saveToLocalStorage(x, y, r, isHit, timestamp) {
-    const saved_data = localStorage.getItem(STORAGE_KEY);
-    let old_uploaded_data = saved_data ? JSON.parse(saved_data) : [];
-    const new_card = {
-        x: x,
-        y: y,
-        r: r,
-        isHit: isHit,
-        timestamp: timestamp
-    };
-
-    old_uploaded_data.push(new_card);
-    const new_data_for_load = JSON.stringify(old_uploaded_data);
-    localStorage.setItem(STORAGE_KEY, new_data_for_load);
-}
-
-
-function loadFromLocalStorage(){
-    const saved_data = localStorage.getItem(STORAGE_KEY);
-    let old_uploaded_data = saved_data ? JSON.parse(saved_data) : [];
-    old_uploaded_data.forEach((item) => {
-        add_element_to_table(item.x,item.y,item.r,item.isHit,item.timestamp);
-    });
-}
+// const UNIQUE_SALT = "keni_itmo_unique_salt_2026";
+// const STORAGE_KEY = "savedPoints_" + hashString(UNIQUE_SALT);
+//
+// function saveToLocalStorage(x, y, r, isHit, timestamp) {
+//     const saved_data = localStorage.getItem(STORAGE_KEY);
+//     let old_uploaded_data = saved_data ? JSON.parse(saved_data) : [];
+//     const new_card = {
+//         x: x,
+//         y: y,
+//         r: r,
+//         isHit: isHit,
+//         timestamp: timestamp
+//     };
+//
+//     old_uploaded_data.push(new_card);
+//     const new_data_for_load = JSON.stringify(old_uploaded_data);
+//     localStorage.setItem(STORAGE_KEY, new_data_for_load);
+// }
 
 
-loadFromLocalStorage();
+// function loadFromLocalStorage(){
+//     const saved_data = localStorage.getItem(STORAGE_KEY);
+//     let old_uploaded_data = saved_data ? JSON.parse(saved_data) : [];
+//     old_uploaded_data.forEach((item) => {
+//         add_element_to_table(item.x,item.y,item.r,item.isHit,item.timestamp);
+//     });
+// }
+//
+//
+// loadFromLocalStorage();
