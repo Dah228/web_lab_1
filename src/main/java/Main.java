@@ -16,11 +16,9 @@ public class Main {
         while (true) {
 
             // Ждём следующий FastCGI-запрос
-            if (!readData.setConnection()) {
-                break;
-            }
+            readData.setConnection();
 
-            double start = TimeMetrics.startTimer();
+            long start = (long) TimeMetrics.startTimer();
 
             try {
 
@@ -39,9 +37,20 @@ public class Main {
                     );
                 }
 
-                // По условию лабораторной принимаем POST
                 String method =
                         params.getProperty("REQUEST_METHOD");
+
+                // История загружается отдельно при открытии страницы.
+                if ("GET".equalsIgnoreCase(method)) {
+                    if (!"action=history".equals(params.getProperty("QUERY_STRING"))) {
+                        sendError(400, "Bad Request", "Неизвестный запрос");
+                    } else {
+                        HashMap<String, Object> responseMap = new HashMap<>();
+                        responseMap.put("history", HistoryManager.getHistory());
+                        sendJson(200, "OK", responseMap);
+                    }
+                    continue;
+                }
 
                 if (!"POST".equalsIgnoreCase(method)) {
                     sendError(
@@ -59,6 +68,14 @@ public class Main {
                 // JSON -> координаты
                 HashMap<String, Double> data =
                         readData.dataFromResponse(requestBody);
+
+                double x = data.get("coord_x");
+                double y = data.get("coord_y");
+                double r = data.get("radius_r");
+                if (x != Math.rint(x) || x < -5 || x > 3
+                        || y < -5 || y > 3 || r < 1 || r > 4) {
+                    throw new IllegalArgumentException("X: целое от -5 до 3; Y: от -5 до 3; R: от 1 до 4");
+                }
 
                 MathCalculating mathCalculating =
                         new MathCalculating(data);
@@ -156,10 +173,8 @@ public class Main {
         byte[] body =
                 json.getBytes(StandardCharsets.UTF_8);
 
-        /*
-         * У нас FastCgiExternalServer работает с -nph,
-         * поэтому Java формирует ПОЛНЫЙ HTTP-ответ.
-         */
+        // У нас FastCgiExternalServer работает с -nph,
+        //поэтому Java формирует ПОЛНЫЙ HTTP-ответ.
 
         System.out.print(
                 "HTTP/1.1 "
@@ -179,9 +194,7 @@ public class Main {
                         + "\r\n"
         );
 
-        System.out.print(
-                "Cache-Control: no-cache\r\n"
-        );
+        System.out.print("Cache-Control: no-store\r\n");
 
         System.out.print(
                 "Connection: close\r\n"
@@ -189,7 +202,7 @@ public class Main {
 
         System.out.print("\r\n");
 
-        System.out.print(json);
+        System.out.write(body, 0, body.length);
 
         System.out.flush();
     }

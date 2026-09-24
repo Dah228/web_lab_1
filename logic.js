@@ -108,8 +108,7 @@ const tbody = document.getElementById('results-body');
 const coord_X = document.getElementById('coord_X');
 const coord_Y = document.getElementById('coord_Y');
 const radius_R = document.getElementById('radius_R');
-const button_send = document.getElementById('send_button');
-
+const endpoint = '/fcgi-bin/point-checker.jar';
 
 function check_not_null(coord_Y, radius_R) {
     return coord_Y !== "" && radius_R !== "";
@@ -127,15 +126,46 @@ function input_is_correct(coord_Y, radius_R) {
     return check_not_null(coord_Y, radius_R) && check_number(coord_Y, radius_R) && check_range(coord_Y, radius_R);
 }
 
+function add_element_to_table(record) {
+    const tr = document.createElement('tr');
+    const date = new Date(record.timestamp);
+    const cells = [
+        record.x, record.y, record.r,
+        record.isHit ? 'Попала' : 'Не попала',
+        Number.isNaN(date.getTime()) ? record.timestamp : date.toLocaleString('ru-RU'),
+        Number(record.executionTime).toFixed(3)
+    ];
+    cells.forEach(value => {
+        const td = document.createElement('td');
+        td.textContent = value;
+        tr.appendChild(td);
+    });
+    tr.children[3].style.color = record.isHit ? 'green' : 'red';
+    tr.children[3].style.fontWeight = 'bold';
+    tbody.prepend(tr);
+}
 
+function showHistory(history) {
+    tbody.replaceChildren();
+    history.forEach(add_element_to_table);
+}
 
+// Начальную загрузку завершаем до отправки точки.
+const historyLoaded = (async () => {
+    try {
+        const response = await fetch(`${endpoint}?action=history`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
+        const data = await response.json();
+        showHistory(data.history);
+    } catch (err) {
+        console.error('Не удалось загрузить историю:', err);
+    }
+})();
 
 const form = document.getElementById('form_to_input');
-
 form.addEventListener('submit', async function(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
-
     const x = formData.get('coord_X');
     const y = formData.get('coord_Y');
     const r = formData.get('radius_R');
@@ -144,95 +174,18 @@ form.addEventListener('submit', async function(event) {
         alert("Ошибка: введите корректные числа в диапазоне!");
         return;
     }
-    const data = {
-        coord_x: x,
-        coord_y: y,
-        radius_r:r
-    };
-
-    const data_json_str = JSON.stringify(data);
-    const set_obj = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: data_json_str
-    }
     try {
-        const response = await fetch('/fcgi-bin/point-checker.jar', set_obj);
-
-        if (!response.ok) {
-            throw new Error(`Ошибка HTTP: ${response.status}`);
-        }
-
+        await historyLoaded;
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({coord_x: x, coord_y: y, radius_r: r})
+        });
+        if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
         const result_data = await response.json();
-
-        add_element_to_table(x, y, r, result_data.isHit, result_data.timestamp);
-
-    }catch (err){
-        console.error(err.message)
-        alert("server died 💔")
+        showHistory(result_data.history);
+    } catch (err) {
+        console.error(err);
+        alert("Не удалось получить ответ сервера");
     }
-
-
 });
-
-
-
-function add_element_to_table(x, y, r, isHit, timestamp) {
-    const tr = document.createElement('tr');
-    const russian_date = new Date(timestamp).toLocaleString('ru-RU');
-    const resultText = isHit ? 'Попала' : 'Не попала';
-    const color = isHit ? 'green' : 'red';
-    tr.innerHTML = `
-        <td>${x}</td>
-        <td>${y}</td>
-        <td>${r}</td>
-        <td style="color: ${color}; font-weight: bold;">${resultText}</td>
-        <td>${russian_date}</td>
-    `;
-    tbody.prepend(tr);
-    return timestamp;
-}
-
-
-// function hashString(str) {
-//     let hash = 0;
-//     for (let i = 0; i < str.length; i++) {
-//         const char = str.charCodeAt(i);
-//         hash = ((hash << 5) - hash) + char;
-//         hash = hash & hash; // Преобразуем в 32-битное целое число
-//     }
-//     return Math.abs(hash).toString(16);
-// }
-
-// const UNIQUE_SALT = "keni_itmo_unique_salt_2026";
-// const STORAGE_KEY = "savedPoints_" + hashString(UNIQUE_SALT);
-//
-// function saveToLocalStorage(x, y, r, isHit, timestamp) {
-//     const saved_data = localStorage.getItem(STORAGE_KEY);
-//     let old_uploaded_data = saved_data ? JSON.parse(saved_data) : [];
-//     const new_card = {
-//         x: x,
-//         y: y,
-//         r: r,
-//         isHit: isHit,
-//         timestamp: timestamp
-//     };
-//
-//     old_uploaded_data.push(new_card);
-//     const new_data_for_load = JSON.stringify(old_uploaded_data);
-//     localStorage.setItem(STORAGE_KEY, new_data_for_load);
-// }
-
-
-// function loadFromLocalStorage(){
-//     const saved_data = localStorage.getItem(STORAGE_KEY);
-//     let old_uploaded_data = saved_data ? JSON.parse(saved_data) : [];
-//     old_uploaded_data.forEach((item) => {
-//         add_element_to_table(item.x,item.y,item.r,item.isHit,item.timestamp);
-//     });
-// }
-//
-//
-// loadFromLocalStorage();

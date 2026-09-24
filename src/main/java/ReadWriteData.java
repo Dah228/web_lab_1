@@ -13,14 +13,18 @@ public class ReadWriteData {
 
 
     public boolean setConnection() {
+        FCGIInterface fcgi = new FCGIInterface();
 
-        FCGIInterface fcgi =
-                new FCGIInterface();
+        int result = fcgi.FCGIaccept();
 
-        int result =
-                fcgi.FCGIaccept();
+        if (result < 0) {
+            throw new IllegalStateException(
+                    "FCGIaccept() вернул " + result +
+                            ". Проверь FCGI_PORT и занят ли порт 24001."
+            );
+        }
 
-        return result >= 0;
+        return true;
     }
 
 

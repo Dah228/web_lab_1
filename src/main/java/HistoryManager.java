@@ -8,7 +8,7 @@ public class HistoryManager {
 
     private static final List<PointResult> history = new ArrayList<>();
 
-        public static void addRecord(double x, double y, double r, boolean isHit, String timestamp, double executionTime) {
+    public static void addRecord(double x, double y, double r, boolean isHit, String timestamp, double executionTime) {
         PointResult newRecord = new PointResult(x, y, r, isHit, timestamp, executionTime);
         history.add(newRecord);
     }

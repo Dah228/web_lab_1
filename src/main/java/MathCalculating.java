@@ -22,30 +22,30 @@ public class MathCalculating {
 
 
 
-        // Четверть круга (первый квадрант: X >= 0, Y >= 0)
-        private boolean isInsideCircle() {
-            // x^2 + y^2 <= (r/2)^2  <=>  x^2 + y^2 <= r^2 / 4
-            return x >= 0 && y >= 0 && (x * x + y * y) <= (r * r);
-        }
+    // Четверть круга (первый квадрант: X >= 0, Y >= 0)
+    private boolean isInsideCircle() {
+        // x^2 + y^2 <= (r/2)^2  <=>  x^2 + y^2 <= r^2 / 4
+        return x >= 0 && y >= 0 && (x * x + y * y) <= (r * r / 4.0);
+    }
 
-        // Треугольник (третий квадрант: X <= 0, Y <= 0)
-        private boolean isInsideTriangle() {
-            // Уравнение гипотенузы: x + y = -r  =>  -y - x <= r
-            return x <= 0 && y <= 0 && (-y - x <= r);
-        }
+    // Треугольник (третий квадрант: X <= 0, Y <= 0)
+    private boolean isInsideTriangle() {
+        // Уравнение гипотенузы: x + y = -r  =>  -y - x <= r
+        return x <= 0 && y <= 0 && (-y - x <= r);
+    }
 
-        // Прямоугольник (четвертый квадрант: X > 0, Y <= 0)
-        private boolean isInsideRectangle() {
-            // Ширина от 0 до R, высота от 0 до -R/2
-            return x > 0 && y <= 0 && Math.abs(y) <= r / 2.0 && x <= r;
-        }
+    // Прямоугольник (четвертый квадрант: X > 0, Y <= 0)
+    private boolean isInsideRectangle() {
+        // Ширина от 0 до R, высота от 0 до -R/2
+        return x > 0 && y <= 0 && Math.abs(y) <= r / 2.0 && x <= r;
+    }
 
-        // Общая проверка попадания в любую из зон
-        public boolean isInsideZone() {
-            return dataIsCorrect() && (isInsideCircle() ||
-                    isInsideTriangle() ||
-                    isInsideRectangle());
-        }
+    // Общая проверка попадания в любую из зон
+    public boolean isInsideZone() {
+        return dataIsCorrect() && (isInsideCircle() ||
+                isInsideTriangle() ||
+                isInsideRectangle());
+    }
 
     public double getX() {
         return x;
