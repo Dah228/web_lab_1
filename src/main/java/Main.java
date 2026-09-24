@@ -65,7 +65,7 @@ public class Main {
                 String requestBody =
                         readData.getData(params);
 
-                // JSON -> координаты
+
                 HashMap<String, Double> data =
                         readData.dataFromResponse(requestBody);
 
@@ -173,8 +173,6 @@ public class Main {
         byte[] body =
                 json.getBytes(StandardCharsets.UTF_8);
 
-        // У нас FastCgiExternalServer работает с -nph,
-        //поэтому Java формирует ПОЛНЫЙ HTTP-ответ.
 
         System.out.print(
                 "HTTP/1.1 "
