@@ -6,7 +6,7 @@
     <title>ПРОВЕРКА ПОПАДАНИЯ</title>
     <style>
 
-        body{
+        body {
             font-family: "DejaVu Sans Condensed";
             background-color: white;
             /*background-image: url("img.png");*/
@@ -17,13 +17,13 @@
         }
 
         #my_data {
-                font-family: cursive;
-                color: darkblue;
-                font-size: 28px;
+            font-family: cursive;
+            color: darkblue;
+            font-size: 28px;
 
         }
 
-        #main_page_table{
+        #main_page_table {
             width: 100%;
             border: none;
             border-spacing: 5px;
@@ -34,7 +34,8 @@
             width: 10px;
             height: 10px;
         }
-        #drawing_pic{
+
+        #drawing_pic {
             text-align: center
         }
 
@@ -81,10 +82,6 @@
             margin: 10px 5px;
             padding: 8px 16px;
             cursor: pointer;
-            /*background-color: white;*/
-        }
-        #coord_X{
-            /*background-color: white;*/
         }
 
 
@@ -94,7 +91,6 @@
 </head>
 
 <body>
-
 
 
 <table id="main_page_table">
@@ -107,37 +103,48 @@
 
     <tr>
         <td id="drawing_pic">
-            <canvas id="picture" width="400" height="400"> </canvas>
+            <canvas id="picture" width="400" height="400"></canvas>
         </td>
-
 
 
         <td>
             <form id="form_to_input">
-                <label for="coord_X"> Координата X:</label>
-                <select id="coord_X" name="coord_X">
-                    <option value="-5">-5</option>
-                    <option value="-4">-4</option>
-                    <option value="-3">-3</option>
-                    <option value="-2">-2</option>
-                    <option value="-1">-1</option>
-                    <option value="0">0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                </select>
+                <fieldset>
+                    <legend>Координата X:</legend>
+                    <label><input type="radio" name="coord_X" value="-5"> -5</label>
+                    <label><input type="radio" name="coord_X" value="-4"> -4</label>
+                    <label><input type="radio" name="coord_X" value="-3"> -3</label>
+                    <label><input type="radio" name="coord_X" value="-2"> -2</label>
+                    <label><input type="radio" name="coord_X" value="-1"> -1</label>
+                    <label><input type="radio" name="coord_X" value="0"> 0</label>
+                    <label><input type="radio" name="coord_X" value="1"> 1</label>
+                    <label><input type="radio" name="coord_X" value="2"> 2</label>
+                    <label><input type="radio" name="coord_X" value="3"> 3</label>
+                </fieldset>
 
                 <br><br>
                 <label for="coord_Y"> Координата Y:</label>
-                <input id="coord_Y" name="coord_Y" type="text" placeholder="от -5 до 3">
+                <input id="coord_Y" name="coord_Y" type="text" placeholder="от -3 до 5">
                 <br><br>
-                <label for="radius_R"> Радиус R:</label>
-                <input id="radius_R" name="radius_R" type="text" placeholder="от 1 до 4">
 
-                <button id="send_button" type="submit"> Отправить </button>
+                <label for="radius_R"> Радиус R:</label>
+                <select id="radius_R" name="radius_R">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+
+                <button id="send_button" type="submit"> Отправить</button>
                 <br><br>
 
             </form>
+
+        </td>
+
+    <tr>
+        <th colspan="2" id="table_data">
 
             <table id="results-table">
                 <thead>
@@ -153,10 +160,9 @@
                 <tbody id="results-body"></tbody>
             </table>
 
-
-        </td>
-
+        </th>
     </tr>
+
 </table>
 
 <script src="logic.js"></script>

@@ -110,20 +110,20 @@ const coord_Y = document.getElementById('coord_Y');
 const radius_R = document.getElementById('radius_R');
 const endpoint = '/fcgi-bin/point-checker.jar';
 
-function check_not_null(coord_Y, radius_R) {
-    return coord_Y !== "" && radius_R !== "";
+function check_not_null(coord_Y) {
+    return coord_Y !== "";
 }
 
-function check_number(coord_Y, radius_R) {
-    return !isNaN(coord_Y) && !isNaN(radius_R);
+function check_number(coord_Y) {
+    return !isNaN(coord_Y);
 }
 
-function check_range(coord_Y, radius_R) {
-    return (parseFloat(coord_Y) >= -5 && parseFloat(coord_Y) <= 3) && (parseFloat(radius_R) >= 1 && parseFloat(radius_R) <= 4);
+function check_range(coord_Y) {
+    return (parseFloat(coord_Y) >= -3 && parseFloat(coord_Y) <= 5);
 }
 
-function input_is_correct(coord_Y, radius_R) {
-    return check_not_null(coord_Y, radius_R) && check_number(coord_Y, radius_R) && check_range(coord_Y, radius_R);
+function input_is_correct(coord_Y) {
+    return check_not_null(coord_Y) && check_number(coord_Y) && check_range(coord_Y);
 }
 
 function add_element_to_table(record) {

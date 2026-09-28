@@ -25,7 +25,7 @@ public class MathCalculating {
     // Четверть круга (первый квадрант: X >= 0, Y >= 0)
     private boolean isInsideCircle() {
         // x^2 + y^2 <= (r/2)^2  <=>  x^2 + y^2 <= r^2 / 4
-        return x >= 0 && y >= 0 && (x * x + y * y) <= (r * r / 4.0);
+        return x >= 0 && y >= 0 && (x * x + y * y) <= (r * r);
     }
 
     // Треугольник (третий квадрант: X <= 0, Y <= 0)
