@@ -170,7 +170,7 @@ form.addEventListener('submit', async function(event) {
     const y = formData.get('coord_Y');
     const r = formData.get('radius_R');
 
-    if (!input_is_correct(y, r)) {
+    if (!input_is_correct(y)) {
         alert("Ошибка: введите корректные числа в диапазоне!");
         return;
     }
@@ -183,7 +183,7 @@ form.addEventListener('submit', async function(event) {
         });
         if (!response.ok) throw new Error(`Ошибка HTTP: ${response.status}`);
         const result_data = await response.json();
-        showHistory(result_data.history);
+        add_element_to_table(result_data);
     } catch (err) {
         console.error(err);
         alert("Не удалось получить ответ сервера");
