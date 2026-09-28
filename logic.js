@@ -22,7 +22,7 @@ ctx.fill();
 ctx.beginPath();
 ctx.moveTo(200, 200);
 ctx.lineTo(200, 125);
-ctx.arc(200, 200, 75, -Math.PI / 2, 0);
+ctx.arc(200, 200, 150, -Math.PI / 2, 0);
 ctx.closePath();
 ctx.fill();
 
