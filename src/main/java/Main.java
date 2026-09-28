@@ -18,7 +18,7 @@ public class Main {
             // Ждём следующий FastCGI-запрос
             readData.setConnection();
 
-            long start = (long) TimeMetrics.startTimer();
+            long start = TimeMetrics.startTimer();
 
             try {
 
@@ -69,13 +69,7 @@ public class Main {
                 HashMap<String, Double> data =
                         readData.dataFromResponse(requestBody);
 
-                double x = data.get("coord_x");
-                double y = data.get("coord_y");
-                double r = data.get("radius_r");
-                if (x != Math.rint(x) || x < -5 || x > 3
-                        || y < -5 || y > 3 || r < 1 || r > 4) {
-                    throw new IllegalArgumentException("X: целое от -5 до 3; Y: от -5 до 3; R: от 1 до 4");
-                }
+                validateCoordinates(data);
 
                 MathCalculating mathCalculating =
                         new MathCalculating(data);
@@ -86,59 +80,7 @@ public class Main {
                 TimeMetrics workTime =
                         TimeMetrics.finishTimer(start);
 
-                // Сохраняем результат между запросами
-                HistoryManager.addRecord(
-                        mathCalculating.getX(),
-                        mathCalculating.getY(),
-                        mathCalculating.getR(),
-                        isHit,
-                        workTime.currentTime,
-                        workTime.executionTimeMs
-                );
-
-                HashMap<String, Object> responseMap =
-                        new HashMap<>();
-
-                responseMap.put(
-                        "x",
-                        mathCalculating.getX()
-                );
-
-                responseMap.put(
-                        "y",
-                        mathCalculating.getY()
-                );
-
-                responseMap.put(
-                        "r",
-                        mathCalculating.getR()
-                );
-
-                responseMap.put(
-                        "isHit",
-                        isHit
-                );
-
-                responseMap.put(
-                        "timestamp",
-                        workTime.currentTime
-                );
-
-                responseMap.put(
-                        "executionTime",
-                        workTime.executionTimeMs
-                );
-
-                responseMap.put(
-                        "history",
-                        HistoryManager.getHistory()
-                );
-
-                sendJson(
-                        200,
-                        "OK",
-                        responseMap
-                );
+                sendJson(200, "OK", PointService.process(data, workTime));
 
             } catch (IllegalArgumentException e) {
 
@@ -222,5 +164,21 @@ public class Main {
                 statusText,
                 error
         );
+    }
+
+    private static void validateCoordinates(HashMap<String, Double> data) {
+        Double x = data.get("coord_x");
+        Double y = data.get("coord_y");
+        Double r = data.get("radius_r");
+
+        if (x == null || y == null || r == null
+                || !Double.isFinite(x) || !Double.isFinite(y) || !Double.isFinite(r)
+                || x != Math.rint(x) || x < -5 || x > 3
+                || y < -3 || y > 5
+                || r < 1 || r > 5) {
+            throw new IllegalArgumentException(
+                    "X: целое от -5 до 3; Y: от -3 до 5; R: от 1 до 5"
+            );
+        }
     }
 }

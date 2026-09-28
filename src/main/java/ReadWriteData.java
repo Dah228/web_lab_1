@@ -20,7 +20,7 @@ public class ReadWriteData {
         if (result < 0) {
             throw new IllegalStateException(
                     "FCGIaccept() вернул " + result +
-                            ". Проверь FCGI_PORT и занят ли порт 24001."
+                            ". Проверь FCGI_PORT и занят ли порт 13337."
             );
         }
 
@@ -41,28 +41,7 @@ public class ReadWriteData {
             );
         }
 
-        final int contentLength;
-
-        try {
-
-            contentLength =
-                    Integer.parseInt(
-                            contentLengthString
-                    );
-
-        } catch (NumberFormatException e) {
-
-            throw new IllegalArgumentException(
-                    "Некорректный CONTENT_LENGTH"
-            );
-        }
-
-        if (contentLength <= 0) {
-
-            throw new IllegalArgumentException(
-                    "Тело POST-запроса пустое"
-            );
-        }
+        final int contentLength = getContentLength(contentLengthString);
 
         byte[] body =
                 new byte[contentLength];
@@ -106,6 +85,32 @@ public class ReadWriteData {
                     e
             );
         }
+    }
+
+    private static int getContentLength(String contentLengthString) {
+        final int contentLength;
+
+        try {
+
+            contentLength =
+                    Integer.parseInt(
+                            contentLengthString
+                    );
+
+        } catch (NumberFormatException e) {
+
+            throw new IllegalArgumentException(
+                    "Некорректный CONTENT_LENGTH"
+            );
+        }
+
+        if (contentLength <= 0) {
+
+            throw new IllegalArgumentException(
+                    "Тело POST-запроса пустое"
+            );
+        }
+        return contentLength;
     }
 
 
